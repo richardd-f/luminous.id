@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LUMINOUS — Oversized Streetwear</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            milk: '#FBF7F4',
+            oat: '#E5DED2',
+            taupe: '#A39382',
+            mocha: '#685D54',
+            charcoal: '#232323',
+          },
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            playfair: ['Playfair Display', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #FBF7F4;
+      color: #232323;
+      overflow-x: hidden;
+    }
+
+    /* Loading Screen */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: #232323;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 8vw, 5rem);
+      font-weight: 800;
+      color: #FBF7F4;
+      letter-spacing: 0.2em;
+      animation: loaderPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes loaderPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.97);
+      }
+    }
+
+    /* Scroll animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Navbar */
+    .navbar-scroll {
+      background: rgba(251, 247, 244, 0.85);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 2px 30px rgba(35, 35, 35, 0.08);
+    }
+
+    /* Add strong white shadow to logo when navbar is transparent */
+    #navbar:not(.navbar-scroll) img {
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 1)) drop-shadow(0 0 5px rgba(255, 255, 255, 1));
+    }
+
+    /* Hero parallax */
+    .hero-bg {
+      background-image: url('https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=1920&q=85');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    .hero-overlay {
+      background: linear-gradient(135deg, rgba(35, 35, 35, 0.75) 0%, rgba(104, 93, 84, 0.5) 60%, rgba(163, 147, 130, 0.3) 100%);
+    }
+
+    /* Glassmorphism */
+    .glass {
+      background: rgba(251, 247, 244, 0.15);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .glass-dark {
+      background: rgba(35, 35, 35, 0.4);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Product card */
+    .product-card {
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 32px 64px rgba(35, 35, 35, 0.15);
+    }
+
+    .product-card:hover .product-img {
+      transform: scale(1.08);
+    }
+
+    .product-img {
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .product-img-wrap {
+      overflow: hidden;
+      border-radius: 20px 20px 0 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: #232323;
+      color: #FBF7F4;
+      border: 2px solid #232323;
+      transition: all 0.3s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: #232323;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #FBF7F4;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-outline:hover {
+      background: #FBF7F4;
+      color: #232323;
+      border-color: #FBF7F4;
+    }
+
+    .btn-taupe {
+      background: #A39382;
+      color: #FBF7F4;
+      border: 2px solid #A39382;
+      transition: all 0.3s ease;
+    }
+
+    .btn-taupe:hover {
+      background: transparent;
+      color: #A39382;
+    }
+
+    /* Marquee */
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      animation: marquee 25s linear infinite;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Timeline */
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #A39382, transparent);
+    }
+
+    /* Stats counter */
+    .stat-number {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Category filter active */
+    .cat-btn.active {
+      background: #232323 !important;
+      color: #FBF7F4 !important;
+    }
+
+    /* Testimonial card */
+    .testi-card {
+      transition: all 0.3s ease;
+    }
+
+    .testi-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Section divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #A39382, transparent);
+    }
+
+    /* Mobile menu */
+    #mobile-menu {
+      transition: all 0.3s ease;
+    }
+
+    /* Hero text animation */
+    .hero-title {
+      animation: heroFade 1s ease forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    .hero-sub {
+      animation: heroFade 1s ease forwards;
+      animation-delay: 0.6s;
+      opacity: 0;
+    }
+
+    .hero-cta {
+      animation: heroFade 1s ease forwards;
+      animation-delay: 0.9s;
+      opacity: 0;
+    }
+
+    .hero-features {
+      animation: heroFade 1s ease forwards;
+      animation-delay: 1.2s;
+      opacity: 0;
+    }
+
+    @keyframes heroFade {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #FBF7F4;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #A39382;
+      border-radius: 10px;
+    }
+
+    /* Section bg pattern */
+    .bg-grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
+
+    /* Badge */
+    .badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+    }
+
+    /* Floating label */
+    .floating-tag {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-milk">
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- LOADER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="loader">
+    <div class="text-center">
+      <div class="loader-text tracking-widest">LUMINOUS</div>
+      <div class="mt-4 flex gap-2 justify-center">
+        <div class="w-2 h-2 rounded-full bg-taupe animate-bounce" style="animation-delay:0s"></div>
+        <div class="w-2 h-2 rounded-full bg-taupe animate-bounce" style="animation-delay:0.2s"></div>
+        <div class="w-2 h-2 rounded-full bg-taupe animate-bounce" style="animation-delay:0.4s"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- NAVBAR -->
+  <!-- ═══════════════════════════════════════════ -->
+  <nav id="navbar" class="fixed top-0 w-full z-50 transition-all duration-500 py-5">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#hero" class="flex items-center gap-2">
+        <img src="asset/logo.png" alt="Luminos Logo" class="w-30 h-5 object-contain" />
+      </a>
+
+      <!-- Desktop Nav -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#hero"
+          class="font-outfit text-sm font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Home</a>
+        <a href="#about"
+          class="font-outfit text-sm font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">About</a>
+        <a href="#background"
+          class="font-outfit text-sm font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Story</a>
+        <a href="#catalog"
+          class="font-outfit text-sm font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Catalog</a>
+      </div>
+
+      <!-- CTA Desktop -->
+      <a href="#catalog" class="hidden md:block btn-primary font-outfit text-sm font-semibold px-6 py-2.5 rounded-full">
+        Shop Now
+      </a>
+
+      <!-- Hamburger -->
+      <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2">
+        <span class="w-6 h-0.5 bg-charcoal transition-all duration-300" id="hb1"></span>
+        <span class="w-6 h-0.5 bg-charcoal transition-all duration-300" id="hb2"></span>
+        <span class="w-4 h-0.5 bg-charcoal transition-all duration-300" id="hb3"></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu"
+      class="hidden md:hidden bg-milk/95 backdrop-blur-xl border-t border-oat mt-4 px-6 py-6 space-y-4">
+      <a href="#hero" onclick="closeMobileMenu()"
+        class="block font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Home</a>
+      <a href="#about" onclick="closeMobileMenu()"
+        class="block font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">About</a>
+      <a href="#background" onclick="closeMobileMenu()"
+        class="block font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Our
+        Story</a>
+      <a href="#catalog" onclick="closeMobileMenu()"
+        class="block font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Catalog</a>
+      <a href="#catalog" onclick="closeMobileMenu()"
+        class="inline-block btn-primary font-outfit text-sm font-semibold px-6 py-2.5 rounded-full mt-2">Shop Now</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 1. HERO / LANDING PAGE -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="hero" class="relative min-h-screen hero-bg flex items-center justify-center">
+    <div class="hero-overlay absolute inset-0"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-6 text-center">
+
+      <!-- Title -->
+      <h1 class="hero-title font-outfit font-black text-milk leading-none mb-6"
+        style="font-size: clamp(3.5rem, 12vw, 9rem); letter-spacing: -0.02em;">
+        LMNS<br />
+        <span class="italic font-playfair font-normal text-taupe" style="font-size: clamp(2.5rem, 9vw, 7rem);">Lost My
+          Natural Self</span>
+      </h1>
+
+      <!-- Tagline -->
+      <p class="hero-sub font-outfit font-light text-milk/70 text-lg md:text-xl max-w-xl mx-auto mb-10 leading-relaxed">
+        Oversized streetwear yang dirancang untuk generasi muda Indonesia — nyaman, bold, dan autentik.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="hero-cta flex flex-wrap gap-4 justify-center mb-16">
+        <a href="#catalog" class="btn-outline font-outfit font-semibold px-8 py-4 rounded-full text-sm tracking-wide">
+          Explore Catalog
+        </a>
+        <a href="#about"
+          class="glass text-milk font-outfit font-medium px-8 py-4 rounded-full text-sm tracking-wide hover:bg-white/20 transition-colors">
+          Our Story
+        </a>
+      </div>
+
+      <!-- Feature Pills -->
+      <div class="hero-features flex flex-wrap gap-3 justify-center">
+        <div class="glass-dark rounded-full px-5 py-2.5 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-taupe"></div>
+          <span class="font-outfit text-milk/80 text-xs font-medium tracking-wide">Oversized Streetwear</span>
+        </div>
+        <div class="glass-dark rounded-full px-5 py-2.5 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-taupe"></div>
+          <span class="font-outfit text-milk/80 text-xs font-medium tracking-wide">Premium Comfort</span>
+        </div>
+        <div class="glass-dark rounded-full px-5 py-2.5 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-taupe"></div>
+          <span class="font-outfit text-milk/80 text-xs font-medium tracking-wide">Urban Youth Style</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
+      <span class="font-outfit text-milk/40 text-xs tracking-widest">SCROLL</span>
+      <svg class="w-4 h-4 text-milk/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- MARQUEE STRIP -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="bg-charcoal py-4 overflow-hidden">
+    <div class="marquee-track">
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Oversized
+        Fit</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Premium
+        Fabric</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Urban
+        Style</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Baggy
+        Sweatpants</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Streetwear
+        Culture</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Local
+        Brand</span>
+      <span class="text-milk/20">✦</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Oversized
+        Fit</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Premium
+        Fabric</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Urban
+        Style</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Baggy
+        Sweatpants</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Streetwear
+        Culture</span>
+      <span class="text-milk/20">✦</span>
+      <span class="font-outfit font-medium text-taupe text-sm tracking-widest uppercase whitespace-nowrap">Local
+        Brand</span>
+      <span class="text-milk/20">✦</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 2. HOME / ABOUT SHORT -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="about" class="py-24 md:py-36 bg-milk bg-grain">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <!-- About Split -->
+      <div class="grid md:grid-cols-2 gap-16 md:gap-24 items-center px-0 md:px-10">
+        <div class="reveal-left mb-10 md:mb-auto">
+          <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-4">About
+            Luminos</span>
+          <h2 class="font-outfit font-black text-charcoal leading-tight mb-6"
+            style="font-size: clamp(2.2rem, 5vw, 3.5rem);">
+            Born From The<br />
+            <span class="font-playfair italic font-normal text-taupe">Streets of Surabaya</span>
+          </h2>
+          <p class="font-outfit text-mocha/80 leading-relaxed text-base mb-6">
+            Luminos hadir sebagai jawaban atas kebutuhan anak muda Indonesia yang menginginkan fashion berkualitas
+            tinggi dengan gaya yang relevan — oversized, bold, dan tetap elegan.
+          </p>
+          <p class="font-outfit text-mocha/60 leading-relaxed text-sm mb-8">
+            Dengan bahan premium dan desain minimalis yang thoughtful, setiap piece Luminos dirancang untuk menjadi
+            bagian dari identitas pemakainya.
+          </p>
+          <a href="#background"
+            class="btn-primary inline-block font-outfit text-sm font-semibold px-7 py-3.5 rounded-full">
+            Read Our Story
+          </a>
+        </div>
+
+        <div class="hidden md:block reveal-right relative">
+          <div class="rounded-[2rem] overflow-hidden aspect-[4/5]">
+            <!-- placeholder image -->
+          </div>
+          <!-- Decorative element -->
+          <div class="absolute -top-4 -right-4 w-24 h-24 rounded-full border-2 border-taupe/30"></div>
+        </div>
+      </div>
+
+      <!-- Why Choose Luminos -->
+      <div class="reveal mb-16">
+        <div class="text-center mb-14">
+          <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-3">Why
+            Luminos</span>
+          <h2 class="font-outfit font-black text-charcoal" style="font-size: clamp(2rem, 4vw, 3rem);">What Makes Us
+            Different</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="reveal bg-oat rounded-[1.5rem] p-8 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-2xl bg-charcoal/10 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+              </svg>
+            </div>
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Premium Material</h3>
+            <p class="font-outfit text-mocha/70 text-sm leading-relaxed">Bahan berkualitas tinggi yang nyaman dipakai
+              seharian — lembut, breathable, dan tahan lama.</p>
+          </div>
+          <div class="reveal bg-oat rounded-[1.5rem] p-8 hover:shadow-lg transition-shadow"
+            style="transition-delay:0.1s">
+            <div class="w-12 h-12 rounded-2xl bg-charcoal/10 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+            </div>
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Thoughtful Design</h3>
+            <p class="font-outfit text-mocha/70 text-sm leading-relaxed">Desain minimalis yang timeless, terinspirasi
+              dari culture streetwear global dengan sentuhan lokal.</p>
+          </div>
+          <div class="reveal bg-oat rounded-[1.5rem] p-8 hover:shadow-lg transition-shadow"
+            style="transition-delay:0.2s">
+            <div class="w-12 h-12 rounded-2xl bg-charcoal/10 flex items-center justify-center mb-5">
+              <svg class="w-6 h-6 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+              </svg>
+            </div>
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Local Pride</h3>
+            <p class="font-outfit text-mocha/70 text-sm leading-relaxed">100% brand lokal Indonesia yang bangga dengan
+              identitas dan budaya anak muda Nusantara.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="reveal bg-charcoal rounded-[2rem] p-10 md:p-14">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+          <div class="text-center">
+            <div class="font-outfit font-black text-milk stat-number mb-2" style="font-size: clamp(2.5rem, 5vw, 4rem);"
+              data-target="100">0</div>
+            <div class="font-outfit text-taupe text-xs tracking-widest uppercase">Customers</div>
+          </div>
+          <div class="text-center">
+            <div class="font-outfit font-black text-milk stat-number mb-2" style="font-size: clamp(2.5rem, 5vw, 4rem);"
+              data-target="15">0</div>
+            <div class="font-outfit text-taupe text-xs tracking-widest uppercase">Products</div>
+          </div>
+          <div class="text-center">
+            <div class="font-outfit font-black text-milk stat-number mb-2" style="font-size: clamp(2.5rem, 5vw, 4rem);"
+              data-target="2">0</div>
+            <div class="font-outfit text-taupe text-xs tracking-widest uppercase">Years Old</div>
+          </div>
+          <div class="text-center">
+            <div class="font-outfit font-black text-milk stat-number mb-2" style="font-size: clamp(2.5rem, 5vw, 4rem);"
+              data-target="3">0</div>
+            <div class="font-outfit text-taupe text-xs tracking-widest uppercase">Cities</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FASHION SHOWCASE BANNER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="relative py-0 overflow-hidden">
+    <div class="relative h-[60vh] md:h-[70vh]"
+      style="background-image: url('https://images.unsplash.com/photo-1614676471928-2ed0ad1061a4?w=1920&q=85'); background-size: cover; background-position: center top; background-attachment: fixed;">
+      <div class="absolute inset-0"
+        style="background: linear-gradient(to right, rgba(35,35,35,0.85) 0%, rgba(35,35,35,0.4) 50%, transparent 100%);">
+      </div>
+      <div class="relative z-10 h-full flex items-center">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="max-w-lg reveal-left">
+            <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-4">New
+              Collection</span>
+            <h2 class="font-outfit font-black text-milk leading-tight mb-5"
+              style="font-size: clamp(2rem, 5vw, 3.5rem);">
+              Baggy Sweatpants<br />
+              <span class="font-playfair italic font-normal text-taupe">Collection 2025</span>
+            </h2>
+            <p class="font-outfit text-milk/60 text-sm leading-relaxed mb-8">
+              Inovasi terbaru Luminos — celana baggy sweatpants yang memadukan kenyamanan maksimal dengan gaya
+              streetwear yang authentic.
+            </p>
+            <a href="#catalog"
+              class="btn-outline inline-block font-outfit text-sm font-semibold px-7 py-3.5 rounded-full">
+              Shop the Drop
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TESTIMONIALS -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="py-24 md:py-32 bg-oat">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-14 reveal">
+        <span
+          class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-3">Testimonials</span>
+        <h2 class="font-outfit font-black text-charcoal" style="font-size: clamp(2rem, 4vw, 3rem);">What They Say</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="reveal testi-card bg-milk rounded-[1.5rem] p-7 shadow-sm">
+          <div class="flex gap-1 mb-4">
+            <span class="text-taupe text-base">★★★★★</span>
+          </div>
+          <p class="font-outfit text-mocha/80 text-sm leading-relaxed mb-6 italic">"Bahan T-shirt oversized Luminos
+            beneran premium banget, ga kalah sama brand luar. Fit-nya juga sesuai ekspektasi, worth it!"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-taupe/20 flex items-center justify-center">
+              <span class="font-outfit font-bold text-taupe text-sm">RD</span>
+            </div>
+            <div>
+              <div class="font-outfit font-semibold text-charcoal text-sm">Rafi D.</div>
+              <div class="font-outfit text-mocha/50 text-xs">Jakarta Selatan</div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal testi-card bg-milk rounded-[1.5rem] p-7 shadow-sm" style="transition-delay:0.1s">
+          <div class="flex gap-1 mb-4">
+            <span class="text-taupe text-base">★★★★★</span>
+          </div>
+          <p class="font-outfit text-mocha/80 text-sm leading-relaxed mb-6 italic">"Hoodie Luminos jadi favorit buat
+            daily wear. Desainnya clean, nyaman dipakai kemana-mana, dan dapat banyak compliment!"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-taupe/20 flex items-center justify-center">
+              <span class="font-outfit font-bold text-taupe text-sm">SA</span>
+            </div>
+            <div>
+              <div class="font-outfit font-semibold text-charcoal text-sm">Salsabila A.</div>
+              <div class="font-outfit text-mocha/50 text-xs">Bandung</div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal testi-card bg-milk rounded-[1.5rem] p-7 shadow-sm" style="transition-delay:0.2s">
+          <div class="flex gap-1 mb-4">
+            <span class="text-taupe text-base">★★★★★</span>
+          </div>
+          <p class="font-outfit text-mocha/80 text-sm leading-relaxed mb-6 italic">"Baggy sweatpants terbaru mereka
+            terlalu enak! Cocok buat hangout atau WFH. Gue udah punya 3 warna sekarang haha."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-taupe/20 flex items-center justify-center">
+              <span class="font-outfit font-bold text-taupe text-sm">MF</span>
+            </div>
+            <div>
+              <div class="font-outfit font-semibold text-charcoal text-sm">Muhammad F.</div>
+              <div class="font-outfit text-mocha/50 text-xs">Surabaya</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 3. LATAR BELAKANG / OUR STORY -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="background" class="py-24 md:py-36 bg-milk">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <!-- Header -->
+      <div class="text-center mb-20 reveal">
+        <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-4">Our
+          Story</span>
+        <h2 class="font-outfit font-black text-charcoal leading-tight" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+          Latar Belakang<br />
+          <span class="font-playfair italic font-normal text-taupe">Brand Luminos</span>
+        </h2>
+      </div>
+
+      <!-- Story Content -->
+      <div class="grid md:grid-cols-2 gap-16 items-start mb-24">
+        <div class="reveal-left">
+          <div class="rounded-[2rem] overflow-hidden aspect-[4/3]">
+            <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=85" alt="Luminos Story"
+              class="w-full h-full object-cover" />
+          </div>
+        </div>
+        <div class="reveal-right space-y-6">
+          <div class="bg-oat rounded-[1.5rem] p-6">
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Cerita Berdirinya Brand</h3>
+            <p class="font-outfit text-mocha/80 text-sm leading-relaxed">
+              Luminos lahir dari keresahan sekelompok anak muda Jakarta yang frustrasi dengan pilihan fashion lokal —
+              terlalu mahal kalau premium, terlalu murahan kalau murah. Kami memutuskan untuk menghadirkan alternatif:
+              brand lokal yang bangga dengan identitasnya, berkompromi pada kualitas bukan pada harga.
+            </p>
+          </div>
+          <div class="bg-oat rounded-[1.5rem] p-6">
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Visi & Misi</h3>
+            <p class="font-outfit text-mocha/80 text-sm leading-relaxed mb-3">
+              <strong>Visi:</strong> Menjadi brand streetwear lokal terdepan yang merepresentasikan gaya hidup anak muda
+              urban Indonesia.
+            </p>
+            <p class="font-outfit text-mocha/80 text-sm leading-relaxed">
+              <strong>Misi:</strong> Menghadirkan produk fashion berkualitas premium dengan harga yang accessible,
+              desain yang timeless, dan nilai yang mengedepankan identitas lokal.
+            </p>
+          </div>
+          <div class="bg-oat rounded-[1.5rem] p-6">
+            <h3 class="font-outfit font-bold text-charcoal text-lg mb-3">Target Market</h3>
+            <p class="font-outfit text-mocha/80 text-sm leading-relaxed">
+              Anak muda Indonesia usia 17–28 tahun di perkotaan besar seperti Jakarta, Bandung, Surabaya, dan Yogyakarta
+              yang aktif di media sosial, melek fashion, dan menghargai produk lokal berkualitas.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Innovation Section -->
+      <div class="reveal bg-charcoal rounded-[2rem] p-10 md:p-14 mb-24 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5"
+          style="background-image: radial-gradient(circle at 80% 50%, #A39382, transparent 60%);"></div>
+        <div class="relative z-10 grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-4">Innovation
+              2025</span>
+            <h3 class="font-outfit font-black text-milk leading-tight mb-5"
+              style="font-size: clamp(1.8rem, 4vw, 3rem);">
+              Introducing<br />
+              <span class="font-playfair italic font-normal text-taupe">Baggy Sweatpants</span>
+            </h3>
+            <p class="font-outfit text-milk/60 text-sm leading-relaxed">
+              Berdasarkan hasil riset dan masukan dari komunitas, Luminos mengembangkan produk barunya: Baggy
+              Sweatpants. Inovasi ini hadir untuk memperluas lini produk sekaligus memperkuat posisi Luminos sebagai
+              brand yang adaptif terhadap tren.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="font-outfit font-black text-taupe text-2xl mb-1">Soft</div>
+              <div class="font-outfit text-milk/50 text-xs">French Terry Material</div>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="font-outfit font-black text-taupe text-2xl mb-1">Wide</div>
+              <div class="font-outfit text-milk/50 text-xs">Baggy Silhouette</div>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="font-outfit font-black text-taupe text-2xl mb-1">6+</div>
+              <div class="font-outfit text-milk/50 text-xs">Colorways</div>
+            </div>
+            <div class="bg-white/5 rounded-2xl p-5">
+              <div class="font-outfit font-black text-taupe text-2xl mb-1">XS–3XL</div>
+              <div class="font-outfit text-milk/50 text-xs">Size Range</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 4. CATALOG -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section id="catalog" class="py-24 md:py-36 bg-oat">
+    <div class="max-w-7xl mx-auto px-6">
+
+      <!-- Header -->
+      <div class="text-center mb-12 reveal">
+        <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-4">Our
+          Products</span>
+        <h2 class="font-outfit font-black text-charcoal leading-tight" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+          The Catalog
+        </h2>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="flex flex-wrap gap-3 justify-center mb-12 reveal">
+        <button
+          class="cat-btn active font-outfit text-xs font-semibold tracking-widest uppercase px-5 py-2.5 rounded-full bg-charcoal text-milk transition-all"
+          onclick="filterCatalog('all', this)">All</button>
+        <button
+          class="cat-btn font-outfit text-xs font-semibold tracking-widest uppercase px-5 py-2.5 rounded-full bg-milk/60 text-mocha hover:bg-milk transition-all"
+          onclick="filterCatalog('tshirt', this)">T-Shirt</button>
+        <button
+          class="cat-btn font-outfit text-xs font-semibold tracking-widest uppercase px-5 py-2.5 rounded-full bg-milk/60 text-mocha hover:bg-milk transition-all"
+          onclick="filterCatalog('hoodie', this)">Hoodie</button>
+        <button
+          class="cat-btn font-outfit text-xs font-semibold tracking-widest uppercase px-5 py-2.5 rounded-full bg-milk/60 text-mocha hover:bg-milk transition-all"
+          onclick="filterCatalog('sweatpants', this)">Baggy Sweatpants</button>
+        <button
+          class="cat-btn font-outfit text-xs font-semibold tracking-widest uppercase px-5 py-2.5 rounded-full bg-milk/60 text-mocha hover:bg-milk transition-all"
+          onclick="filterCatalog('pants', this)">Streetwear Pants</button>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+        <!-- Product 1 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product1_front-Photoroom.png" alt="Oversize Tee Essential"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Lumicore"</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized fit · 100% Cotton · Unisex</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product2_front-Photoroom.png" alt="Oversize Tee Charcoal"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Midnight Glow”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized fit · 100% Cotton · Unisex</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat relative">
+            <img src="asset/product3_front-Photoroom.png" alt="Luminos Hoodie"
+              class="product-img w-full h-full object-cover" />
+            <div
+              class="absolute top-3 left-3 bg-charcoal text-milk font-outfit text-xs font-semibold px-3 py-1 rounded-full">
+              New</div>
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Static Dreams”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized · Fleece lined · Drop shoulder</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product4_front-Photoroom.png" alt="Hoodie Oat"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Grizzly Division”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized · Fleece lined · Drop shoulder</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat relative">
+            <img src="asset/product5_front-Photoroom.png" alt="Baggy Sweatpants"
+              class="product-img w-full h-full object-cover" />
+            <div
+              class="absolute top-3 left-3 bg-taupe text-milk font-outfit text-xs font-semibold px-3 py-1 rounded-full">
+              Best Seller</div>
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Grizzly Division”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Baggy fit · French terry · Elastic waist</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product6_front-Photoroom.png" alt="Sweatpants Charcoal"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Lumicore”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Baggy fit · French terry · Elastic waist</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 7 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product7_front-Photoroom.png" alt="Streetwear Pants"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Capybara”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product 8 -->
+        <div class="product-card reveal bg-milk rounded-[1.5rem] overflow-hidden shadow-sm" data-cat="shirt">
+          <div class="product-img-wrap aspect-[3/4] bg-oat">
+            <img src="asset/product8_front-Photoroom.png" alt="Track Pants Cargo"
+              class="product-img w-full h-full object-cover" />
+          </div>
+          <div class="p-5">
+            <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Basic Tee”</h3>
+            <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CTA BANNER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="py-24 bg-charcoal relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10"
+      style="background-image: radial-gradient(circle at 30% 50%, #A39382, transparent 50%), radial-gradient(circle at 70% 50%, #685D54, transparent 50%);">
+    </div>
+    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center reveal">
+      <span class="font-outfit text-xs font-semibold text-taupe tracking-[0.25em] uppercase block mb-5">Don't Miss
+        Out</span>
+      <h2 class="font-outfit font-black text-milk leading-tight mb-6" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+        Free Ongkir<br />
+        <span class="font-playfair italic font-normal text-taupe">seluruh Indonesia</span>
+      </h2>
+      <p class="font-outfit text-milk/50 text-base mb-10">Untuk pembelian di atas Rp 500.000. Berlaku setiap hari.</p>
+      <a href="#catalog" class="btn-taupe inline-block font-outfit text-sm font-semibold px-10 py-4 rounded-full">
+        Shop Now
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer class="bg-mocha text-milk py-16">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-10 mb-12">
+        <!-- Brand -->
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-2 mb-4">
+            <img src="asset/logo.png" alt="Luminos Logo" class="h-10 object-contain" />
+          </div>
+          <p class="font-outfit text-milk/50 text-sm leading-relaxed max-w-xs mb-6">
+            Brand fashion lokal Indonesia yang menghadirkan oversized streetwear berkualitas premium untuk anak muda
+            urban.
+          </p>
+          <!-- Social Media -->
+          <div class="flex gap-3">
+            <a href="https://www.instagram.com/luminouswear.id"
+              class="w-9 h-9 rounded-xl bg-milk/10 hover:bg-milk/20 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-milk" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+              </svg>
+            </a>
+            <a href="https://www.tiktok.com/@luminouswear.id"
+              class="w-9 h-9 rounded-xl bg-milk/10 hover:bg-milk/20 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-milk" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.28 8.28 0 004.84 1.56V6.79a4.84 4.84 0 01-1.07-.1z" />
+              </svg>
+            </a>
+            <a href="https://api.whatsapp.com/send?phone=6283852527000"
+              class="w-9 h-9 rounded-xl bg-milk/10 hover:bg-milk/20 flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-milk" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="font-outfit font-bold text-milk/80 text-sm tracking-widest uppercase mb-5">Quick Links</h4>
+          <ul class="space-y-3">
+            <li><a href="#hero" class="font-outfit text-milk/50 text-sm hover:text-milk transition-colors">Home</a></li>
+            <li><a href="#about" class="font-outfit text-milk/50 text-sm hover:text-milk transition-colors">About Us</a>
+            </li>
+            <li><a href="#background" class="font-outfit text-milk/50 text-sm hover:text-milk transition-colors">Our
+                Story</a></li>
+            <li><a href="#catalog"
+                class="font-outfit text-milk/50 text-sm hover:text-milk transition-colors">Catalog</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <h4 class="font-outfit font-bold text-milk/80 text-sm tracking-widest uppercase mb-5">Contact</h4>
+          <ul class="space-y-3">
+            <li class="font-outfit text-milk/50 text-sm">hello@luminos.id</li>
+            <li class="font-outfit text-milk/50 text-sm">@luminos.id</li>
+            <li class="font-outfit text-milk/50 text-sm">Jakarta, Indonesia</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="divider mb-8"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <span class="font-outfit text-milk/30 text-xs tracking-wide">© 2025 LUMINOUS. All rights reserved.</span>
+        <span class="font-outfit text-milk/30 text-xs tracking-wide">Proudly made in Indonesia 🇮🇩</span>
+      </div>
+    </div>
+  </footer>
+
+
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- JAVASCRIPT -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script>
+    // Loading screen
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 800);
+    });
+
+    // Navbar scroll behavior
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      if (window.scrollY > 60) {
+        nav.classList.add('navbar-scroll');
+        nav.classList.remove('py-5');
+        nav.classList.add('py-3');
+      } else {
+        nav.classList.remove('navbar-scroll');
+        nav.classList.remove('py-3');
+        nav.classList.add('py-5');
+      }
+    });
+
+    // Hamburger toggle
+    let menuOpen = false;
+    document.getElementById('hamburger').addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      const menu = document.getElementById('mobile-menu');
+      const hb3 = document.getElementById('hb3');
+      if (menuOpen) {
+        menu.classList.remove('hidden');
+        hb3.classList.add('w-6');
+      } else {
+        menu.classList.add('hidden');
+        hb3.classList.remove('w-6');
+      }
+    });
+    function closeMobileMenu() {
+      menuOpen = false;
+      document.getElementById('mobile-menu').classList.add('hidden');
+    }
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.style.transitionDelay = entry.target.style.transitionDelay || `${i * 0.05}s`;
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    // Counter animation
+    function animateCounters() {
+      document.querySelectorAll('.stat-number').forEach(el => {
+        const target = parseInt(el.getAttribute('data-target'));
+        const suffix = target >= 1000 ? 'K+' : target >= 100 ? '+' : '+';
+        const displayTarget = target >= 1000 ? (target / 1000) : target;
+        let current = 0;
+        const increment = displayTarget / 60;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= displayTarget) {
+            current = displayTarget;
+            clearInterval(timer);
+          }
+          el.textContent = Number.isInteger(displayTarget) ? Math.floor(current) + suffix : current.toFixed(1) + suffix;
+        }, 25);
+      });
+    }
+    const statsSection = document.querySelector('.stat-number');
+    if (statsSection) {
+      const statsObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          animateCounters();
+          statsObserver.disconnect();
+        }
+      }, { threshold: 0.3 });
+      statsObserver.observe(statsSection.parentElement.parentElement);
+    }
+
+    // Catalog filter
+    function filterCatalog(category, btn) {
+      // Update active button
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Filter products
+      const cards = document.querySelectorAll('#product-grid [data-cat]');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-cat') === category) {
+          card.style.display = '';
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            card.style.transition = 'all 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, 50);
+        } else {
+          card.style.transition = 'all 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(10px)';
+          setTimeout(() => { card.style.display = 'none'; }, 300);
+        }
+      });
+    }
+
+
+  </script>
+</body>
+
+</html>

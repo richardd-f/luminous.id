@@ -362,6 +362,81 @@
         transform: translateY(-8px);
       }
     }
+
+    /* Cart Drawer */
+    #cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 35, 35, 0.5);
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    #cart-overlay.open { opacity: 1; visibility: visible; }
+    #cart-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      height: 100%;
+      width: 100%;
+      max-width: 420px;
+      background: #FBF7F4;
+      z-index: 201;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -8px 0 40px rgba(35, 35, 35, 0.12);
+    }
+    #cart-drawer.open { transform: translateX(0); }
+
+    /* Size Modal */
+    #size-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 35, 35, 0.5);
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #size-modal-overlay.open { opacity: 1; visibility: visible; }
+    #size-modal {
+      background: #FBF7F4;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 360px;
+      width: 100%;
+      transform: scale(0.95);
+      transition: transform 0.3s ease;
+    }
+    #size-modal-overlay.open #size-modal { transform: scale(1); }
+
+    /* Cart badge */
+    .cart-badge {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: #A39382;
+      color: #FBF7F4;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+    .size-btn.selected {
+      background: #232323 !important;
+      color: #FBF7F4 !important;
+      border-color: #232323 !important;
+    }
   </style>
 </head>
 
@@ -403,10 +478,18 @@
           class="font-outfit text-sm font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Catalog</a>
       </div>
 
-      <!-- CTA Desktop -->
-      <a href="#catalog" class="hidden md:block btn-primary font-outfit text-sm font-semibold px-6 py-2.5 rounded-full">
-        Shop Now
-      </a>
+      <!-- CTA Desktop + Cart -->
+      <div class="hidden md:flex items-center gap-3">
+        <a href="#catalog" class="btn-primary font-outfit text-sm font-semibold px-6 py-2.5 rounded-full">
+          Shop Now
+        </a>
+        <button onclick="openCart()" class="relative w-10 h-10 rounded-full border border-charcoal/20 flex items-center justify-center hover:bg-oat transition-colors">
+          <svg class="w-5 h-5 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          <span id="cart-badge" class="cart-badge hidden">0</span>
+        </button>
+      </div>
 
       <!-- Hamburger -->
       <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-2">
@@ -430,6 +513,12 @@
         class="block font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">Catalog</a>
       <a href="#catalog" onclick="closeMobileMenu()"
         class="inline-block btn-primary font-outfit text-sm font-semibold px-6 py-2.5 rounded-full mt-2">Shop Now</a>
+      <button onclick="openCart(); closeMobileMenu()" class="flex items-center gap-2 font-outfit font-medium text-charcoal hover:text-taupe transition-colors tracking-wide">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        Cart <span id="cart-badge-mobile" class="text-taupe font-bold text-sm"></span>
+      </button>
     </div>
   </nav>
 
@@ -934,6 +1023,7 @@
             <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized fit · 100% Cotton · Unisex</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Lumicore"' data-price="149000" data-image="asset/product1_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -949,10 +1039,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Midnight Glow”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Midnight Glow"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized fit · 100% Cotton · Unisex</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Midnight Glow"' data-price="149000" data-image="asset/product2_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -971,10 +1062,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Static Dreams”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Static Dreams"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized · Fleece lined · Drop shoulder</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Static Dreams"' data-price="149000" data-image="asset/product3_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -990,10 +1082,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Grizzly Division”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Grizzly Division"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Oversized · Fleece lined · Drop shoulder</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Grizzly Division"' data-price="149000" data-image="asset/product4_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1012,10 +1105,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Grizzly Division”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Grizzly Division"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Baggy fit · French terry · Elastic waist</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Grizzly Division"' data-price="149000" data-image="asset/product5_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1031,10 +1125,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Lumicore”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Lumicore"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Baggy fit · French terry · Elastic waist</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Lumicore"' data-price="149000" data-image="asset/product6_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1050,10 +1145,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Capybara”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Capybara"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Capybara"' data-price="149000" data-image="asset/product7_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1069,10 +1165,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Basic Tee”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Basic Tee"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Basic Tee"' data-price="149000" data-image="asset/product8_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1088,10 +1185,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Basic Tee”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Basic Tee"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 149.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Basic Tee"' data-price="149000" data-image="asset/product9_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1107,10 +1205,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “The Motto”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "The Motto"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 189.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "The Motto"' data-price="189000" data-image="asset/product10_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1126,10 +1225,11 @@
           </div>
           <div class="p-5">
             <span class="badge font-outfit font-semibold text-taupe tracking-widest uppercase block mb-2">Shirt</span>
-            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous “Mortal Man”</h3>
+            <h3 class="font-outfit font-bold text-charcoal text-base mb-1">Luminous "Mortal Man"</h3>
             <p class="font-outfit text-mocha/60 text-xs mb-4">Wide leg · Taped seam · Side pockets</p>
             <div class="flex items-center justify-between">
               <span class="font-outfit font-black text-charcoal text-lg">Rp 189.000</span>
+              <button class="add-to-cart-btn btn-primary font-outfit text-xs font-semibold px-4 py-2 rounded-full" data-name='Luminous "Mortal Man"' data-price="189000" data-image="asset/product11_front-Photoroom.png">Add</button>
             </div>
           </div>
         </div>
@@ -1233,6 +1333,68 @@
       </div>
     </div>
   </footer>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SIZE MODAL -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="size-modal-overlay" onclick="closeSizeModal(event)">
+    <div id="size-modal">
+      <div class="flex items-start justify-between mb-5">
+        <div>
+          <h3 id="size-modal-name" class="font-outfit font-bold text-charcoal text-base leading-tight mb-1"></h3>
+          <p class="font-outfit text-mocha/50 text-xs">Pilih ukuran</p>
+        </div>
+        <button onclick="closeSizeModalForce()" class="w-8 h-8 rounded-full bg-oat flex items-center justify-center hover:bg-charcoal hover:text-milk transition-colors ml-3 flex-shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-5">
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('XS')">XS</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('S')">S</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('M')">M</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('L')">L</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('XL')">XL</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('XXL')">XXL</button>
+        <button class="size-btn font-outfit font-semibold text-sm px-4 py-2 rounded-xl border-2 border-oat hover:border-charcoal transition-colors" onclick="selectSize('3XL')">3XL</button>
+      </div>
+      <p id="size-error" class="font-outfit text-red-400 text-xs mb-3 hidden">Pilih ukuran terlebih dahulu.</p>
+      <button onclick="confirmAddToCart()" class="btn-primary w-full font-outfit text-sm font-semibold py-3 rounded-full">
+        Tambah ke Cart
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CART DRAWER -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="cart-overlay" onclick="closeCart()"></div>
+  <div id="cart-drawer">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-oat flex-shrink-0">
+      <h2 class="font-outfit font-black text-charcoal text-xl">Your Cart</h2>
+      <button onclick="closeCart()" class="w-8 h-8 rounded-full bg-oat flex items-center justify-center hover:bg-charcoal hover:text-milk transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div id="cart-items" class="flex-1 overflow-y-auto px-6 py-4 space-y-3"></div>
+    <div class="border-t border-oat px-6 py-5 flex-shrink-0 space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="font-outfit font-medium text-mocha text-sm">Total</span>
+        <span id="cart-total" class="font-outfit font-black text-charcoal text-xl">Rp 0</span>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="clearCart()" class="font-outfit text-xs font-semibold px-5 py-3 rounded-full border-2 border-charcoal/20 text-mocha hover:border-charcoal hover:text-charcoal transition-colors whitespace-nowrap">
+          Hapus Semua
+        </button>
+        <button onclick="closeCart()" class="flex-1 btn-primary font-outfit text-sm font-semibold py-3 rounded-full">
+          Lanjut Belanja
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!-- JAVASCRIPT -->
@@ -1459,6 +1621,179 @@
         }
       });
     }
+
+    // ── CART ─────────────────────────────────────────────────────────────
+    const CART_KEY = 'luminous_cart';
+    let _pendingProduct = null;
+    let _selectedSize = null;
+
+    function _loadCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; }
+    }
+    function _saveCart(cart) { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+
+    function _cartId(name, size) {
+      return name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') + '_' + size;
+    }
+
+    function addToCart(name, price, image, size) {
+      const cart = _loadCart();
+      const id = _cartId(name, size);
+      const item = cart.find(i => i.id === id);
+      if (item) { item.qty += 1; } else { cart.push({ id, name, price, image, size, qty: 1 }); }
+      _saveCart(cart);
+      _updateBadge();
+      _renderCart();
+    }
+
+    function removeFromCart(id) {
+      _saveCart(_loadCart().filter(i => i.id !== id));
+      _updateBadge();
+      _renderCart();
+    }
+
+    function updateQty(id, delta) {
+      const cart = _loadCart();
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.qty = Math.max(0, item.qty + delta);
+      _saveCart(item.qty === 0 ? cart.filter(i => i.id !== id) : cart);
+      _updateBadge();
+      _renderCart();
+    }
+
+    function clearCart() {
+      _saveCart([]);
+      _updateBadge();
+      _renderCart();
+    }
+
+    function _fmtPrice(n) {
+      return 'Rp ' + n.toLocaleString('id-ID');
+    }
+
+    function _updateBadge() {
+      const count = _loadCart().reduce((s, i) => s + i.qty, 0);
+      const b = document.getElementById('cart-badge');
+      const bm = document.getElementById('cart-badge-mobile');
+      if (b) { b.textContent = count; b.classList.toggle('hidden', count === 0); }
+      if (bm) { bm.textContent = count > 0 ? '(' + count + ')' : ''; }
+    }
+
+    function _renderCart() {
+      const cart = _loadCart();
+      const el = document.getElementById('cart-items');
+      const tot = document.getElementById('cart-total');
+      if (!el) return;
+      if (cart.length === 0) {
+        el.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-full py-16 text-center">
+            <svg class="w-16 h-16 text-oat mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <p class="font-outfit font-medium text-mocha/60 text-sm">Cart kosong</p>
+            <p class="font-outfit text-mocha/40 text-xs mt-1">Tambah produk dari catalog</p>
+          </div>`;
+        if (tot) tot.textContent = _fmtPrice(0);
+        return;
+      }
+      const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      el.innerHTML = cart.map(item => `
+        <div class="flex gap-3 items-start bg-white rounded-2xl p-3">
+          <img src="${item.image}" alt="${item.name}"
+            class="w-14 h-[4.5rem] object-cover rounded-xl flex-shrink-0"
+            onerror="this.src='https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100&q=80'"/>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-outfit font-bold text-charcoal text-sm leading-tight mb-0.5 truncate">${item.name}</h4>
+            <p class="font-outfit text-taupe text-xs mb-2">Size: ${item.size}</p>
+            <div class="flex items-center justify-between">
+              <span class="font-outfit font-black text-charcoal text-sm">${_fmtPrice(item.price)}</span>
+              <div class="flex items-center gap-1.5">
+                <button onclick="updateQty('${item.id}',-1)"
+                  class="w-6 h-6 rounded-full bg-oat flex items-center justify-center hover:bg-charcoal hover:text-milk transition-colors text-sm font-bold leading-none">−</button>
+                <span class="font-outfit font-semibold text-charcoal text-sm w-5 text-center">${item.qty}</span>
+                <button onclick="updateQty('${item.id}',1)"
+                  class="w-6 h-6 rounded-full bg-oat flex items-center justify-center hover:bg-charcoal hover:text-milk transition-colors text-sm font-bold leading-none">+</button>
+              </div>
+            </div>
+          </div>
+          <button onclick="removeFromCart('${item.id}')" class="text-mocha/30 hover:text-charcoal transition-colors mt-0.5 flex-shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>`).join('');
+      if (tot) tot.textContent = _fmtPrice(total);
+    }
+
+    function openCart() {
+      document.getElementById('cart-overlay').classList.add('open');
+      document.getElementById('cart-drawer').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      _renderCart();
+    }
+
+    function closeCart() {
+      document.getElementById('cart-overlay').classList.remove('open');
+      document.getElementById('cart-drawer').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Size modal
+    function openSizeModal(name, price, image) {
+      _pendingProduct = { name, price, image };
+      _selectedSize = null;
+      const nm = document.getElementById('size-modal-name');
+      if (nm) nm.textContent = name;
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+      const errEl = document.getElementById('size-error');
+      if (errEl) errEl.classList.add('hidden');
+      document.getElementById('size-modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSizeModal(evt) {
+      if (evt && evt.target !== document.getElementById('size-modal-overlay')) return;
+      closeSizeModalForce();
+    }
+
+    function closeSizeModalForce() {
+      document.getElementById('size-modal-overlay').classList.remove('open');
+      if (!document.getElementById('cart-drawer').classList.contains('open')) {
+        document.body.style.overflow = '';
+      }
+      _pendingProduct = null;
+      _selectedSize = null;
+    }
+
+    function selectSize(size) {
+      _selectedSize = size;
+      document.querySelectorAll('.size-btn').forEach(b => {
+        b.classList.toggle('selected', b.textContent.trim() === size);
+      });
+      const errEl = document.getElementById('size-error');
+      if (errEl) errEl.classList.add('hidden');
+    }
+
+    function confirmAddToCart() {
+      if (!_selectedSize) {
+        const errEl = document.getElementById('size-error');
+        if (errEl) errEl.classList.remove('hidden');
+        return;
+      }
+      addToCart(_pendingProduct.name, _pendingProduct.price, _pendingProduct.image, _selectedSize);
+      closeSizeModalForce();
+      openCart();
+    }
+
+    // Event delegation for add-to-cart buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      _updateBadge();
+      document.addEventListener('click', e => {
+        const btn = e.target.closest('.add-to-cart-btn');
+        if (btn) openSizeModal(btn.dataset.name, parseInt(btn.dataset.price, 10), btn.dataset.image);
+      });
+    });
   </script>
 </body>
 
